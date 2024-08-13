@@ -82,7 +82,7 @@ class VoteItemController {
 
     public vote = async (socket: Socket, data: any): Promise<void> => {
         console.log('vote event', data)
-        const menu_id = data.menu_id;
+        const menu_id = data.item_id;
         const category = data.category;
         const date = new Date().toISOString().split('T')[0];
 

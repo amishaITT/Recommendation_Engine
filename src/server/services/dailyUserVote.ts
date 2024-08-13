@@ -60,6 +60,8 @@ class DailyUserVoteService {
         try {
             const votes = await DailyUserVote.findOne({ where: { user_id, date, category } });
 
+            console.log('getUserVotesByCondition-----------------', user_id, date, category, votes)
+
             if (votes) {
                 return true;
             }

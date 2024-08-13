@@ -15,6 +15,8 @@ export class EmployeeService {
         const preferences = await this.promptPreferences();
         console.log('Preferences:------------------------', preferences);
 
+        console.log('user-----',user)
+
         await this.employeeRepository.updateEmployeePreference(user.id, preferences.mealType, preferences.spiceLevel, preferences.category, preferences.sweetTooth);
     }
 
@@ -72,6 +74,8 @@ export class EmployeeService {
         }
 
         const answers = await this.promptDiscardItemFeedback(discardRollOutItem);
+
+        console.log('answers----------', answers)
         await this.employeeRepository.createDiscardFeedback(discardRollOutItem.item_id, user.id, answers.answers1, answers.answers2, answers.answers3);
     }
 
@@ -90,18 +94,15 @@ export class EmployeeService {
             const currentDate = new Date().toISOString().split('T')[0];
             const dailyMenuItems = await this.employeeRepository.getDailyMenuItemByDate(currentDate) as any;
 
-            if (dailyMenuItems.length === 0) {
+            if (!dailyMenuItems || dailyMenuItems?.length === 0) {
                 console.log('No menu items found for today');
                 return null;
             }
 
-            console.log('--- Daily Menu Items ---', dailyMenuItems);
             console.table(dailyMenuItems);
 
             const item_id = await this.promptUserForFeedbackItems();
             const selectedItem = dailyMenuItems.filter((item: any) => item.id == item_id)[0];
-
-            console.log('selectedItem:', selectedItem.category);
 
             const isAlreadyProvidedFeedback = await this.employeeRepository.isAlreadyProvidedFeedback(selectedItem.category, user);
 
@@ -111,7 +112,6 @@ export class EmployeeService {
             }
 
             const employeeFeedback = await this.promptFeedback();
-            console.log('selectedItem:', selectedItem);
 
             const feedback = {
                 item_id: parseInt(selectedItem.id),
@@ -183,9 +183,24 @@ export class EmployeeService {
 
     public async viewMenu() {
         this.socketController.emit("viewMenu");
+
+        await new Promise((resolve) => {
+            this.socketController.on("menuItemSuccess", (menuItem) => {
+                console.table(menuItem);
+                resolve(menuItem)
+            });
+        })
     }
 
-    public viewNotification() {
-        this.socketController.emit('getRolloutItems');
+    public async viewNotification(user) {
+        this.socketController.emit('getNotificationByDate', { user });
+
+        const data = await new Promise((resolve) => {
+            this.socketController.on('getNotificationByDateSuccess', (data) => {
+                resolve(data.notification);
+            });
+        }) as any;
+
+        console.table(data);
     }
 }

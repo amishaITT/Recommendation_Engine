@@ -37,14 +37,6 @@ socketController.on("itemAdded", (menuItem) => {
   console.log("Item added", menuItem);
 });
 
-socketController.on("getRolloutItemsSuccess", (menuItem) => {
-  console.table(menuItem);
-});
-
-socketController.on("menuItemSuccess", (menuItem) => {
-  console.table(menuItem);
-});
-
-socketController.on('getRecommendedItemsSuccess', (menuItems: any) => {
+socketController.on('getRecommendedItemsSuccess', (menuItems) => {
   console.table(menuItems);
 });

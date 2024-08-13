@@ -28,6 +28,8 @@ class DailyMenuItemController {
         console.log("getDailyMenuItemByDate date", date)
         try {
             const dailyMenuItem = await this.dailyMenuItemService.getDailyMenuItemByDate(date);
+
+            console.log('dailyMenuItem-------------------', dailyMenuItem)
             socket.emit('getDailyMenuItemByDateSuccess', dailyMenuItem);
         } catch (error) {
             socket.emit('getDailyMenuItemByDateError', { error: error.message });

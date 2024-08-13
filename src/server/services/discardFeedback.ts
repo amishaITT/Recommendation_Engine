@@ -12,7 +12,10 @@ class DiscardFeedbackService {
 
     async createDiscardFeedback(user_id: number, item_id: number, date: string, question1: string, question2: string, question3: string) {
         try {
+
+            console.log("item_id, user_id, answers1, answers2, answers3------------------", question1, question2, question3 )
             const existingFeedback = await this.checkDiscardFeedback(user_id, item_id, date);
+            console.log("existingFeedback----------", existingFeedback)
             if (existingFeedback) {
                 throw new Error('You have already provided feedback for this item today');
             }

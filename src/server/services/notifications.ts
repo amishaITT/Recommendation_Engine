@@ -111,11 +111,14 @@ class NotificationService {
                 })
             )
 
+            console.log('menuItems------------------', menuItems)
+
+
             const menuItemMap = new Map(menuItems.map(item => [item.item_id, item]));
             const employeePreferences = await employeePreferencesService.getEmployeePreference(user.id);
 
             console.log('Creating notification details', menuItemMap);
-            console.log("Getting map element: ", menuItemMap.get(26))
+            console.log("Getting map element: ", menuItemMap.get(10))
 
             const notificationsWithDetails = await Promise.all(
                 ['1'].map(async () => {
@@ -212,8 +215,9 @@ class NotificationService {
                 }
                 return 0;
             };
-
+            
             const sortedItems = menuItems.sort(sortItems);
+            console.log('sortedItems----------', sortedItems)
             resolve(sortedItems);
         });
     }

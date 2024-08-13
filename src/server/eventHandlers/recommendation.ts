@@ -18,15 +18,14 @@ export default class RecommendationEventHandler {
         });
 
         this.socket.on("getDiscardableItems", async (data) => {
-            console.log("Event getDiscardableItems", data)
+            console.log("Event getDiscardableItems---------------", data)
             const { menu_type } = data
             await recommendationSocketHandler.getDiscardableMenuItems(this.socket, menu_type);
         });
 
         this.socket.on("discardItem", async (data) => {
-            console.log('Item to be discarded----------------------------',data)
-            const { items: selectedItems } = data
-            await recommendationSocketHandler.discardMenuItems(this.socket, selectedItems);
+            console.log('Item to be discarded----------------------------qwer',data)
+            await recommendationSocketHandler.discardMenuItems(this.socket, data);
         });
     }
 }

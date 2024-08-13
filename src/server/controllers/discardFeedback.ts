@@ -15,11 +15,13 @@ class DiscardFeedbackController {
         }
     };
     public createDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
-        const { item_id, user_id, answer1, answer2, answer3 } = data;
+        const { item_id, user_id, answers1, answers2, answers3 } = data;
         const date = new Date().toISOString().slice(0, 7);
 
+        console.log("item_id, user_id, answer1, answer2, answer3-------------", item_id, user_id, answers1, answers2, answers3)
+
         try {
-            const feedback = await this.discardFeedbackService.createDiscardFeedback(user_id, item_id, date, answer1, answer2, answer3);
+            const feedback = await this.discardFeedbackService.createDiscardFeedback(user_id, item_id, date, answers1, answers2, answers3);
 
             socket.emit('createDiscardFeedbackSuccess', feedback);
         } catch (error) {

@@ -12,6 +12,7 @@ class DiscardRollOutController {
         }
     };
     public createDiscardRollOut = async (socket: Socket, data: any): Promise<void> => {
+        console.log('entering createDiscardRollOut====================', data)
         const date = new Date().toISOString().slice(0, 7);
         const { id: item_id, name: item_name, price } = data.items;
 

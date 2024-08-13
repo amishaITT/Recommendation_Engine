@@ -63,6 +63,8 @@ class EmployeePreferencesService {
             preference.category = category;
             preference.sweetTooth = sweetTooth;
             await preference.save();
+
+            console.log("New preferences-----------------------------------------------------",preference )
             return preference;
         } catch (error) {
             throw new Error(error.message);

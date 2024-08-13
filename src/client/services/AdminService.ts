@@ -41,5 +41,12 @@ export class AdminService {
 
   public async viewMenu() {
     this.adminRepository.viewMenu();
+
+    await new Promise((resolve) => {
+      this.socketController.on("menuItemSuccess", (menuItem) => {
+        console.table(menuItem);
+        resolve(menuItem)
+      });
+    })
   }
 }

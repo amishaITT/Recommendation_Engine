@@ -5,6 +5,7 @@ import { SocketController } from './socketController';
 export class ChefController {
   private chefService: ChefService;
 
+
   constructor(socketController: SocketController) {
     this.chefService = new ChefService(socketController);
   }

@@ -31,7 +31,7 @@ export class EmployeeController {
                     await this.employeeService.viewMenu();
                     break;
                 case '2':
-                    this.employeeService.viewNotification();
+                    await this.employeeService.viewNotification(user);
                     break;
                 case '3':
                     await this.employeeService.chooseItem(user);

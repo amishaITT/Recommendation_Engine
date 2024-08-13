@@ -21,15 +21,38 @@ export class EmployeeRepository {
         });
     }
 
-    public async showDiscardMenuItem(): Promise<any> {
-        this.socketController.emit('showDiscardMenuItem');
+    // public async showDiscardMenuItem(): Promise<any> {
+    //     this.socketController.emit('showDiscardMenuItem');
 
-        return new Promise((resolve) => {
-            this.socketController.once('showDiscardMenuItemSuccess', (data) => {
-                resolve(data.discardRollOutItem);
+    //     return new Promise((resolve) => {
+    //         this.socketController.once('showDiscardMenuItemSuccess', (data) => {
+    //             resolve(data.discardRollOutItem);
+    //         });
+    //     });
+    // }
+
+    public async showDiscardMenuItem() {
+        const discardRollOutItem = await this.getDiscardRollOutByDate() as any;
+        console.log('--- This Month\'s Discard Roll Out Item ---');
+        console.table([discardRollOutItem])
+
+        return discardRollOutItem;
+    }
+
+    public async getDiscardRollOutByDate() {
+        return new Promise((resolve, reject) => {
+            this.socketController.emit('getDiscardRollOutByDate');
+
+            this.socketController.on('getDiscardRollOutByDateSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socketController.on('getDiscardRollOutByDateError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch discard rollouts by date'));
             });
         });
     }
+
 
     public async createDiscardFeedback(item_id: string, user_id: string, answers1: string, answers2: string, answers3: string) {
         this.socketController.emit('createDiscardFeedback', { item_id, user_id, answers1, answers2, answers3 });
@@ -40,17 +63,17 @@ export class EmployeeRepository {
 
         return new Promise((resolve) => {
             this.socketController.once('getDailyMenuItemByDateSuccess', (data) => {
-                resolve(data.dailyMenuItems);
+                resolve(data);
             });
         });
     }
 
     public async isAlreadyProvidedFeedback(category: string, user: any): Promise<boolean> {
-        this.socketController.emit('isAlreadyProvidedFeedback', { category, user });
+        this.socketController.emit('getUserFeedbacksByCondition', { category, user });
 
         return new Promise((resolve) => {
-            this.socketController.once('isAlreadyProvidedFeedbackSuccess', (data) => {
-                resolve(data.isAlreadyProvidedFeedback);
+            this.socketController.once('getUserFeedbacksByConditionSuccess', (data) => {
+                resolve(data);
             });
         });
     }
@@ -60,16 +83,30 @@ export class EmployeeRepository {
     }
 
     public async isAlreadyVoted(category: string, user: any): Promise<boolean> {
-        this.socketController.emit('isAlreadyVoted', { category, user });
+        return new Promise((resolve, reject) => {
+            this.socketController.emit('getUserVotesByCondition', { category, user });
 
-        return new Promise((resolve) => {
-            this.socketController.once('isAlreadyVotedSuccess', (data) => {
-                resolve(data.isAlreadyVoted);
+            this.socketController.on('getUserVotesByConditionSuccess', (data: boolean) => {
+                resolve(data);
+            });
+
+            this.socketController.on('getUserVotesByConditionError', (error: any) => {
+                reject(new Error(error.message || 'Failed to check if already voted'));
             });
         });
     }
 
-    public async vote(category: string, user: any, item_id: string) {
-        this.socketController.emit('vote', { category, user, item_id });
+    public async vote(category: string, user: any, menu_id: string) {
+        return new Promise((resolve, reject) => {
+            this.socketController.emit('createUserVote', { category, menu_id, user });
+
+            this.socketController.on('createUserVoteSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socketController.on('createUserVoteError', (error: any) => {
+                reject(new Error(error.message || 'Failed to vote'));
+            });
+        });
     }
 }

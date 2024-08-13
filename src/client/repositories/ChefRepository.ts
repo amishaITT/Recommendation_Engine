@@ -1,4 +1,5 @@
 import { SocketController } from '../controllers/socketController';
+import { askQuestion } from '../utils/inputUtils';
 
 export class ChefRepository {
   private socketController: SocketController;
@@ -11,8 +12,15 @@ export class ChefRepository {
     this.socketController.emit("viewMenu");
   }
 
-  public getRolloutItems() {
+  public async getRolloutItems() {
     this.socketController.emit('getRolloutItems');
+
+    await new Promise((resolve) => {
+      this.socketController.on("getRolloutItemsSuccess", (menuItem) => {
+        console.table(menuItem);
+        resolve(menuItem)
+      });
+    })
   }
 
   public async getTopRecommendations(menu_type: string) {
@@ -122,8 +130,21 @@ export class ChefRepository {
     return new Promise((resolve, reject) => {
       this.socketController.emit('getDiscardableItems', { menu_type });
 
-      this.socketController.once('getDiscardableItemsSuccess', resolve);
-      this.socketController.once('getDiscardableItemsError', reject);
+      this.socketController.on('getDiscardableItemsSuccess', async (menuItems)=>{
+        if (!menuItems.length) {
+          return null;
+          }
+          
+          console.log('Discardable items for', menu_type, 'are:')
+          console.table(menuItems);
+          
+          const selectedItems = await askQuestion('Select Item ID:\n');
+          
+          resolve(menuItems.filter((menuItem)=>{
+            return menuItem.id == +selectedItems;
+          })[0]);
+      });
+      this.socketController.on('getDiscardableItemsError', reject);
     });
   }
 
@@ -131,12 +152,21 @@ export class ChefRepository {
     this.socketController.emit('discardItem', selectedItem);
   }
 
-  public async discardRollout(selectedItem: any): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.socketController.emit('askDiscardFeedback', selectedItem);
+  async discardRollout(selectedItem) {
+    return new Promise<void>((resolve) => {
+      this.socketController.off('canCreateDiscardRollOutSuccess')
 
-      this.socketController.once('askDiscardFeedbackSuccess', resolve);
-      this.socketController.once('askDiscardFeedbackError', reject);
-    });
+      this.socketController.emit('canCreateDiscardRollOut')
+
+      this.socketController.on('canCreateDiscardRollOutSuccess', async (canCreateDiscardRollOut) => {
+        if (canCreateDiscardRollOut) {
+          this.socketController.emit('createDiscardRollOut', { items: selectedItem });
+          console.log('Discard rollout created successfully');
+        } else {
+          console.log('Cannot create discard rollout as it has already been created for this month');
+        }
+        resolve();
+      })
+    })
   }
 }

@@ -5,6 +5,7 @@ import VoteItemService from '../services/voteItem';
 class DailyUserVoteController {
     private DailyUserVoteService: DailyUserVoteService;
     private voteItemService: VoteItemService;
+    
     public createUserVote = async (socket: Socket, data: any): Promise<void> => {
         const { category } = data;
         const { id: user_id } = data.user

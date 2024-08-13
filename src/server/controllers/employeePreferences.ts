@@ -41,7 +41,9 @@ class EmployeePreferencesController {
         }
     };
     public updateEmployeePreference = async (socket: Socket, data: any): Promise<void> => {
-        const { userId, mealType, spiceLevel, category, sweetTooth } = data;
+        const { id: userId, mealType, spiceLevel, category, sweetTooth } = data;
+
+        console.log("Got the preferences--------------",  userId, mealType, spiceLevel, category, sweetTooth)
         try {
             const preference = await this.employeePreferencesService.updateEmployeePreference(userId, mealType, spiceLevel, category, sweetTooth);
             socket.emit('updateEmployeePreferenceSuccess', preference);

@@ -22,6 +22,7 @@ export class SocketController {
 
   private onError = (msg: string) => {
     console.log(msg);
+    process.exit()
   };
 
   private onMessage = (msg: string) => {
